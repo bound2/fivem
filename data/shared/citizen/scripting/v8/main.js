@@ -132,17 +132,21 @@ const EXT_LOCALFUNCREF = 11;
 		try {
 			const refFunctionCallback = refFunctionsMap.get(ref).callback;
 			if (refFunctionCallback instanceof Promise) {
-				return runWithBoundaryStart(async () => {
+				console.log(`[debug] ref function is promise: ${refFunctionCallback}`)
+				runWithBoundaryStart(async () => {
 					const result = await refFunctionCallback(...unpack(argsSerialized));
+					console.log(`[debug] ref function promise result: ${result}`);
 					return pack([result]);
 				});
 			} else {
+				console.log(`[debug] ref function: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
 					return pack([refFunctionCallback(...unpack(argsSerialized))]);
 				});
 			}
 		} catch (e) {
 			global.printError('call ref', e);
+			console.error(e.message, e.stack);
 			
 			return pack(null);
 		}
