@@ -142,7 +142,7 @@ const EXT_LOCALFUNCREF = 11;
 				console.log(`[debug] ref function is promise: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
 					const dict = new Map();
-					dict.set("__cfx_async_retval", async (args) => refFunctionCallback(args));
+					dict.set("__cfx_async_retval", new Promise((resolve) => resolve(refFunctionCallback(...unpack(argsSerialized)))));
 					return pack([dict]);
 				});
 			} else {
