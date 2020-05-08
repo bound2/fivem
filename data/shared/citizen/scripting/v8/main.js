@@ -87,9 +87,11 @@ const EXT_LOCALFUNCREF = 11;
 
 				switch (retvals.length) {
 					case 0:
+						console.log(`[debug] no functions elements`);
 						return undefined;
 					case 1:
 						const element = retvals[0];
+						console.log(`[debug] element value: ${element}, type: ${typeof element}`);
 						if (element instanceof Map && element.has("__cfx_async_retval")) {
 							const asyncRef = element.get("__cfx_async_retval");
 							console.log(`[debug] unpack __cfx_async_retval: ${element}, asyncRef: ${asyncRef}`);
@@ -98,6 +100,7 @@ const EXT_LOCALFUNCREF = 11;
 							return element;
 						}
 					default:
+						console.log(`[debug] default retvals: ${retvals}`);
 						return retvals;
 				}
 			});
@@ -144,7 +147,7 @@ const EXT_LOCALFUNCREF = 11;
 				console.log(`[debug] ref function is promise / asyncFunction: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
 					const dict = new Map();
-					dict.set("__cfx_async_retval", new Promise((resolve) => resolve(refFunctionCallback(...unpack(argsSerialized)))));
+					dict.set("__cfx_async_retval", (args) => new Promise((resolve) => resolve(refFunctionCallback(args))));
 					return pack([dict]);
 				});
 			} else {
