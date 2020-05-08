@@ -124,6 +124,7 @@ const EXT_LOCALFUNCREF = 11;
 	});
 
 	const AsyncFunction = (async function () {}).constructor;
+	const promiseRegex = new RegExp(`return Promise\.resolve|return new Promise`);
 	/**
 	 * Invokes ref function
 	 * 
@@ -139,7 +140,7 @@ const EXT_LOCALFUNCREF = 11;
 
 		try {
 			const refFunctionCallback = refFunctionsMap.get(ref).callback;
-			if (refFunctionCallback instanceof Promise || refFunctionCallback.constructor === AsyncFunction) {
+			if (refFunctionCallback instanceof Promise || refFunctionCallback.constructor === AsyncFunction || promiseRegex.test(refFunctionCallback.toString())) {
 				console.log(`[debug] ref function is promise / asyncFunction: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
 					const dict = new Map();
