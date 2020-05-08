@@ -92,10 +92,13 @@ const EXT_LOCALFUNCREF = 11;
 					case 1:
 						const element = retvals[0];
 						console.log(`[debug] element value: ${element}, type: ${typeof element}`);
-						if (element instanceof Map && element.has("__cfx_async_retval")) {
-							const asyncRef = element.get("__cfx_async_retval");
-							console.log(`[debug] unpack __cfx_async_retval: ${element}, asyncRef: ${asyncRef}`);
-							return async () => asyncRef(args);
+						if (typeof element === 'object' && element.__cfx_async_retval) {
+							const asyncRef = element.__cfx_async_retval;
+							console.log(`[debug] unpack __cfx_async_retval to asyncRef: ${asyncRef}`);
+							return async () => {
+								console.log(`[debug] invoke unpacked async functions with args: ${args}`);
+								return asyncRef(args);
+							}
 						} else {
 							return element;
 						}
@@ -146,8 +149,9 @@ const EXT_LOCALFUNCREF = 11;
 			if (refFunctionCallback instanceof Promise || refFunctionCallback.constructor === AsyncFunction || promiseRegex.test(refFunctionCallback.toString())) {
 				console.log(`[debug] ref function is promise / asyncFunction: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
-					const dict = new Map();
-					dict.set("__cfx_async_retval", (args) => new Promise((resolve) => resolve(refFunctionCallback(args))));
+					const dict = {
+						"__cfx_async_retval": (args) => new Promise((resolve) => resolve(refFunctionCallback(args)))
+					};
 					return pack([dict]);
 				});
 			} else {
