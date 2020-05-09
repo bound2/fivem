@@ -93,12 +93,8 @@ const EXT_LOCALFUNCREF = 11;
 						const element = retvals[0];
 						console.log(`[debug] element value: ${element}, type: ${typeof element}`);
 						if (typeof element === 'object' && element.__cfx_async_retval) {
-							const asyncRef = element.__cfx_async_retval;
-							console.log(`[debug] unpack __cfx_async_retval to asyncRef: ${asyncRef}`);
-							return async () => {
-								console.log(`[debug] invoke unpacked async functions with args: ${args}`);
-								return asyncRef(args);
-							}
+							console.log(`[debug] unpack __cfx_async_retval`);
+							return element.__cfx_async_retval();
 						} else {
 							return element;
 						}
@@ -150,7 +146,7 @@ const EXT_LOCALFUNCREF = 11;
 				console.log(`[debug] ref function is promise / asyncFunction: ${refFunctionCallback}`);
 				return runWithBoundaryStart(() => {
 					const dict = {
-						"__cfx_async_retval": (args) => new Promise((resolve) => resolve(refFunctionCallback(args)))
+						"__cfx_async_retval": () => new Promise((resolve) => resolve(refFunctionCallback(...unpack(argsSerialized))))
 					};
 					return pack([dict]);
 				});
