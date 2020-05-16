@@ -94,7 +94,11 @@ const EXT_LOCALFUNCREF = 11;
 						console.log(`[debug] element value: ${JSON.stringify(element)}, type: ${typeof element}`);
 						if (typeof element === 'object' && element.__cfx_async_retval) {
 							console.log(`[debug] unpack __cfx_async_retval`);
-							return refFunctionsMap.get(element.__cfx_async_retval.ref).callback(...unpack(element.__cfx_async_retval.argsSerialized));
+							const asyncRef = refFunctionsMap.get(element.__cfx_async_retval.ref).callback;
+							console.log(`[debug] asyncRef: ${asyncRef.toString()}`);
+							const asyncArgs = unpack(element.__cfx_async_retval.argsSerialized);
+							console.log(`[debug] asyncArgs: ${asyncArgs}`);
+							return new Promise((resolve) => resolve(asyncRef(asyncArgs)));
 						} else {
 							return element;
 						}
