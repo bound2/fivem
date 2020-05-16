@@ -144,10 +144,9 @@ const EXT_LOCALFUNCREF = 11;
 			const refFunctionCallback = refFunctionsMap.get(ref).callback;
 			if (refFunctionCallback instanceof Promise || refFunctionCallback.constructor === AsyncFunction || promiseRegex.test(refFunctionCallback.toString())) {
 				console.log(`[debug] ref function is promise / asyncFunction: ${refFunctionCallback}`);
-				return runWithBoundaryStart(async () => {
-					const result = await refFunctionCallback(...unpack(argsSerialized));
+				return runWithBoundaryStart(() => {
 					const dict = {
-						"__cfx_async_retval": () => new Promise((resolve) => resolve(result))
+						"__cfx_async_retval": () => new Promise((resolve) => resolve(refFunctionCallback(...unpack(argsSerialized))))
 					};
 					return pack([dict]);
 				});
